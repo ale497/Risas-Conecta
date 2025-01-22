@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risas Conecta</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+    }
+    h1 {
+      color: #ff9800;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin: 20px auto;
+      width: 300px;
+    }
+    .tile {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+    .tile img {
+      width: 40px;
+      height: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Risas Conecta</h1>
+  <div id="game-message"></div>
+  <div class="grid" id="game-grid"></div>
+  <script>
+    // Lista de emojis de risa
+    const emojis = [
+      '😂', '🤣', '😅', '😆', '😁', '😄', '😃', '😀', '😹', '😸', '😺', '😜'
+    ];
+
+    const grid = document.getElementById('game-grid');
+    const message = document.getElementById('game-message');
+    let selected = [];
+    let matches = 0;
+
+    // Genera la cuadrícula del juego
+    function createGrid() {
+      const tiles = [];
+      emojis.forEach(emoji => {
+        tiles.push({ emoji });
+        tiles.push({ emoji }); // Agrega un par de cada emoji
+      });
+      // Mezcla las fichas
+      tiles.sort(() => Math.random() - 0.5);
+      
+      // Agrega las fichas al DOM
+      tiles.forEach(tile => {
+        const div = document.createElement('div');
+        div.classList.add('tile');
+        div.textContent = tile.emoji;
+        div.dataset.emoji = tile.emoji;
+        div.addEventListener('click', () => selectTile(div));
+        grid.appendChild(div);
+      });
+    }
+
+    // Seleccionar ficha
+    function selectTile(tile) {
+      if (selected.length < 2 && !tile.classList.contains('matched')) {
+        tile.classList.add('selected');
+        selected.push(tile);
+
+        if (selected.length === 2) {
+          checkMatch();
+        }
+      }
+    }
+
+    // Verifica si las fichas seleccionadas coinciden
+    function checkMatch() {
+      const [first, second] = selected;
+      if (first.dataset.emoji === second.dataset.emoji) {
+        first.classList.add('matched');
+        second.classList.add('matched');
+        matches++;
+        if (matches === emojis.length) {
+          message.textContent = '¡Ganaste! 🎉';
+        }
+      } else {
+        setTimeout(() => {
+          first.classList.remove('selected');
+          second.classList.remove('selected');
+        }, 500);
+      }
+      selected = [];
+    }
+
+    // Inicia el juego
+    createGrid();
+  </script>
+</body>
+</html>
